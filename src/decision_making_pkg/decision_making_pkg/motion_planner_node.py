@@ -20,7 +20,7 @@ TIMER = 0.1
 
 class MotionPlanningNode(Node):
     def __init__(self):
-        super().__init__('motion_planning_node')
+        super().__init__('motion_planner_node')
 
         # 토픽 이름 설정
         self.sub_detection_topic = self.declare_parameter('sub_detection_topic', SUB_DETECTION_TOPIC_NAME).value

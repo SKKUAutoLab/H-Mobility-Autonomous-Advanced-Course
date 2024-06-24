@@ -19,7 +19,7 @@ PUB_TOPIC_NAME = 'lidar_processed'
 
 class LidarSensorDataProcessor(Node):
     def __init__(self):
-        super().__init__('lidar_subscriber_node')
+        super().__init__('lidar_processor_node')
 
         self.qos_profile = QoSProfile(
             reliability=QoSReliabilityPolicy.RELIABLE,

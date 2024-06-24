@@ -21,7 +21,7 @@ PUB_TOPIC_NAME = 'lidar_obstacle_info'  # 물체 감지 여부를 퍼블리시�
 
 class ObjectDetection(Node):
     def __init__(self):
-        super().__init__('object_detection_node')
+        super().__init__('lidar_obstacle_detector_node')
 
         self.qos_profile = QoSProfile(
             reliability=QoSReliabilityPolicy.RELIABLE,

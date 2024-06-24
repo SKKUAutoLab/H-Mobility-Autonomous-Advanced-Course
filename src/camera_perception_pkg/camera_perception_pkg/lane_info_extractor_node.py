@@ -26,7 +26,7 @@ SHOW_IMAGE = True
 
 class Yolov8InfoExtractor(Node):
     def __init__(self):
-        super().__init__('yolov8_info_extractor_node')
+        super().__init__('lane_info_extractor_node')
 
         self.sub_topic = self.declare_parameter('sub_detection_topic', SUB_TOPIC_NAME).value
         self.pub_topic = self.declare_parameter('pub_topic', PUB_TOPIC_NAME).value
