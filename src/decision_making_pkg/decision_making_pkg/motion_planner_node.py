@@ -45,6 +45,11 @@ class MotionPlanningNode(Node):
         self.traffic_light_data = None
         self.lidar_data = None
 
+        self.steering_command = 0
+        self.left_speed_command =0
+        self.right_speed_command =0
+        
+
         # 서브스크라이버 설정
         self.detection_sub = self.create_subscription(DetectionArray, self.sub_detection_topic, self.detection_callback, self.qos_profile)
         self.lane_sub = self.create_subscription(LaneInfo, self.sub_lane_topic, self.lane_callback, self.qos_profile)
@@ -71,10 +76,11 @@ class MotionPlanningNode(Node):
         
     def timer_callback(self):
 
-        if self.detection_data is not None and self.lidar_data.data is True:
+        if self.lidar_data is not None and self.lidar_data.data is True:
             # 라이다가 장애물을 감지한 경우
-            steering_command = 0 
-            speed_command = 0 
+            self.steering_command = 0 
+            self.left_speed_command = 0 
+            self.right_speed_command = 0 
 
         elif self.traffic_light_data is not None and self.traffic_light_data.data == 'Red':
             # 빨간색 신호등을 감지한 경우
@@ -87,22 +93,25 @@ class MotionPlanningNode(Node):
 
                     if y_max < 150:
                         # 신호등 위치에 따른 정지명령 결정
-                        steering_command = 0 
-                        speed_command = 0 
-                    
+                        self.steering_command = 0 
+                        self.left_speed_command = 0 
+                        self.right_speed_command = 0
         else:
             if self.lane_data.slope > 0:
-                steering_command =  7
+                self.steering_command =  7
             elif self.lane_data.slope < 0:
-                steering_command =  -7
+                self.steering_command =  -7
+            else:
+                self.steering_command = 0
             
-            speed_command = 100  # 예시 속도 값
+            self.left_speed_command = 100  # 예시 속도 값
+            self.right_speed_command = 100  # 예시 속도 값
 
         # 모션 명령 메시지 생성 및 퍼블리시
         motion_command_msg = MotionCommand()
-        motion_command_msg.steering = steering_command
-        motion_command_msg.left_speed = speed_command
-        motion_command_msg.right_speed = speed_command
+        motion_command_msg.steering = self.steering_command
+        motion_command_msg.left_speed = self.left_speed_command
+        motion_command_msg.right_speed = self.right_speed_command
         self.publisher.publish(motion_command_msg)
 
 def main(args=None):
