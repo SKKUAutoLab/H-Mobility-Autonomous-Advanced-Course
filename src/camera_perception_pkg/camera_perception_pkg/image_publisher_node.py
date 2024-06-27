@@ -30,10 +30,10 @@ IMAGE_DIRECTORY_PATH = 'src/camera_perception_pkg/camera_perception_pkg/lib/Coll
 VIDEO_FILE_PATH = 'src/camera_perception_pkg/camera_perception_pkg/lib/Collected_Datasets/driving_simulation.mp4'
 
 # 화면에 publish하는 이미지를 띄울것인지 여부: True, 또는 False 중 택1하여 입력
-SHOW_IMAGE = False
+SHOW_IMAGE = True
 
 # 이미지 발행 주기 (초) - 소수점 필요 (int형은 반영되지 않음)
-TIMER = 0.1
+TIMER = 0.03
 #----------------------------------------------
 
 class ImagePublisherNode(Node):
@@ -70,6 +70,8 @@ class ImagePublisherNode(Node):
             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         elif self.data_source == 'video':
             self.cap = cv2.VideoCapture(self.video_path)
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
             if not self.cap.isOpened():
                 self.get_logger().error('Cannot open video file: %s' % self.video_path)
                 rclpy.shutdown()
@@ -93,6 +95,7 @@ class ImagePublisherNode(Node):
         if self.data_source == 'camera':
             ret, frame = self.cap.read()
             if ret:
+                frame = cv2.resize(frame, (640, 480))
                 image_msg = self.br.cv2_to_imgmsg(frame)
                 image_msg.header = Header()
                 image_msg.header.stamp = self.get_clock().now().to_msg()
@@ -109,6 +112,7 @@ class ImagePublisherNode(Node):
                 if img is None:
                     self.get_logger().warn('Skipping non-image file: %s' % img_file)
                 else:
+                    img = cv2.resize(img, (640, 480))
                     image_msg = self.br.cv2_to_imgmsg(img)
                     image_msg.header = Header()
                     image_msg.header.stamp = self.get_clock().now().to_msg()
@@ -126,6 +130,7 @@ class ImagePublisherNode(Node):
         elif self.data_source == 'video':
             ret, img = self.cap.read()
             if ret:
+                img = cv2.resize(img, (640, 480))
                 image_msg = self.br.cv2_to_imgmsg(img)
                 image_msg.header = Header()
                 image_msg.header.stamp = self.get_clock().now().to_msg()
