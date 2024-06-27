@@ -46,8 +46,8 @@ class MotionPlanningNode(Node):
         self.lidar_data = None
 
         self.steering_command = 0
-        self.left_speed_command =0
-        self.right_speed_command =0
+        self.left_speed_command = 0
+        self.right_speed_command = 0
         
 
         # 서브스크라이버 설정
@@ -89,7 +89,7 @@ class MotionPlanningNode(Node):
                     x_min = int(detection.bbox.center.position.x - detection.bbox.size.x / 2) # bbox의 좌측상단 꼭짓점 x좌표
                     x_max = int(detection.bbox.center.position.x + detection.bbox.size.x / 2) # bbox의 우측하단 꼭짓점 x좌표
                     y_min = int(detection.bbox.center.position.y - detection.bbox.size.y / 2) # bbox의 좌측상단 꼭짓점 y좌표
-                    y_max = int(detection.bbox.center.position.y + detection.bbox.size.y / 2) # bbox의 좌측상단 꼭짓점 y좌표
+                    y_max = int(detection.bbox.center.position.y + detection.bbox.size.y / 2) # bbox의 우측하단 꼭짓점 y좌표
 
                     if y_max < 150:
                         # 신호등 위치에 따른 정지명령 결정
