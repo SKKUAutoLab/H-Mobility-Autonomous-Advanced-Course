@@ -54,7 +54,8 @@ class Yolov8Node(LifecycleNode):
         # params
         #self.declare_parameter("model", "yolov8m.pt")
         self.declare_parameter("model", "best.pt")
-        self.declare_parameter("device", "cuda:0")
+        self.declare_parameter("device", "cpu")
+        #self.declare_parameter("device", "cuda:0")
         self.declare_parameter("threshold", 0.5)
         self.declare_parameter("enable", True)
         self.declare_parameter("image_reliability",
