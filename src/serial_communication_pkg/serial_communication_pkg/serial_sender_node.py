@@ -15,7 +15,7 @@ from .lib import convert_arduino_msg as PROTOCOL
 # Subscribe할 토픽 이름
 SUB_TOPIC_NAME = "serial_msg"
 
-# 라이다 장치 이름 (ls /dev/ttyACM* 명령을 터미널 창에 입력하여 확인)
+# 아두이노 장치 이름 (ls /dev/ttyACM* 명령을 터미널 창에 입력하여 확인)
 PORT='/dev/ttyACM0'
 
 # 가변저항 입력 핀
