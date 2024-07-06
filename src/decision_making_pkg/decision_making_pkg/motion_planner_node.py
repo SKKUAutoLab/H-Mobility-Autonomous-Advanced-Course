@@ -97,13 +97,16 @@ class MotionPlanningNode(Node):
                         self.left_speed_command = 0 
                         self.right_speed_command = 0
         else:
-            if self.lane_data.slope > 0:
-                self.steering_command =  7
-            elif self.lane_data.slope < 0:
-                self.steering_command =  -7
-            else:
+            if self.lane_data is None:
                 self.steering_command = 0
-            
+            else:    
+                if self.lane_data.slope > 0:
+                    self.steering_command =  7
+                elif self.lane_data.slope < 0:
+                    self.steering_command =  -7
+                else:
+                    self.steering_command = 0
+                
             self.left_speed_command = 100  # 예시 속도 값
             self.right_speed_command = 100  # 예시 속도 값
 
