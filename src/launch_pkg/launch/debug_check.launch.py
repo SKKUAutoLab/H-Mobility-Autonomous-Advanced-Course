@@ -18,6 +18,8 @@ def generate_launch_description():
     
     cam_num_launch_arg = DeclareLaunchArgument("cam_num",  default_value=TextSubstitution(text="2"))
     
+    data_source_launch_arg = DeclareLaunchArgument("data_source", default_value=TextSubstitution(text="camera"))
+
     logger_launch_arg = DeclareLaunchArgument(              
         "logger", default_value=TextSubstitution(text="False")     
     )
@@ -27,7 +29,7 @@ def generate_launch_description():
         executable="image_publisher_node",
         parameters=[{
             "cam_num": LaunchConfiguration('cam_num'), 
-            "data_source": "camera",
+            "data_source": LaunchConfiguration('data_source'),
             "logger": LaunchConfiguration('logger'), 
         }]
     )
@@ -83,7 +85,8 @@ def generate_launch_description():
     return LaunchDescription([
         rqt_graph,
         
-        cam_num_launch_arg,   
+        cam_num_launch_arg,  
+        data_source_launch_arg, 
         logger_launch_arg,
         
         serial_protocol_converter_node,
