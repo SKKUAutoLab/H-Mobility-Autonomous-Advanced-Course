@@ -7,6 +7,7 @@ from rclpy.qos import QoSReliabilityPolicy
 
 from std_msgs.msg import String, Bool
 from interfaces_pkg.msg import LaneInfo, DetectionArray, MotionCommand
+from .lib import decision_making_func_lib as DMFL
 
 # 변수 설정
 SUB_DETECTION_TOPIC_NAME = "detections"
@@ -100,15 +101,29 @@ class MotionPlanningNode(Node):
             if self.lane_data is None:
                 self.steering_command = 0
             else:    
-                if self.lane_data.slope > 0:
-                    self.steering_command =  7
-                elif self.lane_data.slope < 0:
+                target_point = (self.lane_data.target_x, self.lane_data.target_y) # 차선의 중심점
+                car_center_point = (320, 179) # roi가 잘린 후 차량 앞 범퍼 중앙 위치
+
+                target_slope = DMFL.calculate_slope_between_points(target_point, car_center_point)
+                
+                if target_slope > 0:
+                    self.steering_command =  7 # 예시 속도 값 (7이 최대 조향) 
+                elif target_slope < 0:
                     self.steering_command =  -7
                 else:
                     self.steering_command = 0
-                
-            self.left_speed_command = 100  # 예시 속도 값
-            self.right_speed_command = 100  # 예시 속도 값
+
+
+                #### 이전 예시 ####
+                # if self.lane_data.slope > 0:
+                #     self.steering_command =  7 # 예시 속도 값 (7이 최대 조향) 
+                # elif self.lane_data.slope < 0:
+                #     self.steering_command =  -7
+                # else:
+                #     self.steering_command = 0
+                ###########################
+            self.left_speed_command = 100  # 예시 속도 값 (255가 최대 속도)
+            self.right_speed_command = 100  # 예시 속도 값 (255가 최대 속도)
 
         # 모션 명령 메시지 생성 및 퍼블리시
         motion_command_msg = MotionCommand()
