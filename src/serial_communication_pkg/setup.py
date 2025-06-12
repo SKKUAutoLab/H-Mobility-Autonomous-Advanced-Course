@@ -20,7 +20,6 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-			'serial_protocol_converter_node = serial_communication_pkg.serial_protocol_converter_node:main',
 			'serial_sender_node = serial_communication_pkg.serial_sender_node:main',
         ],
     },

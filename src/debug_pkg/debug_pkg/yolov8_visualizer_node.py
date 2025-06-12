@@ -44,10 +44,10 @@ from interfaces_pkg.msg import Detection
 from interfaces_pkg.msg import DetectionArray
 
 
-class DebugNode(LifecycleNode):
+class Yolov8VisualizerNode(LifecycleNode):
 
     def __init__(self) -> None:
-        super().__init__("debug_node")
+        super().__init__("yolov8_visualizer_node")
 
         self._class_to_color = {}
         self.cv_bridge = CvBridge()
@@ -70,7 +70,7 @@ class DebugNode(LifecycleNode):
         )
 
         # pubs
-        self._dbg_pub = self.create_publisher(Image, "dbg_image", 10)
+        self._dbg_pub = self.create_publisher(Image, "yolov8_visualized_img", 10)
         self._bb_markers_pub = self.create_publisher(
             MarkerArray, "dgb_bb_markers", 10)
         self._kp_markers_pub = self.create_publisher(
@@ -293,7 +293,7 @@ class DebugNode(LifecycleNode):
 
 def main():
     rclpy.init()
-    node = DebugNode()
+    node = Yolov8VisualizerNode()
     node.trigger_configure()
     node.trigger_activate()
     rclpy.spin(node)

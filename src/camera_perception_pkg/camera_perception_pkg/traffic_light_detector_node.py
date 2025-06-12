@@ -62,10 +62,10 @@ class TrafficLightDetector(Node):
             if detection.class_name == 'traffic_light':
 
                 hsv_ranges = {
-                    'red1': (np.array([0, 100, 100]), np.array([10, 255, 255])),
-                    'red2': (np.array([160, 100, 100]), np.array([179, 255, 255])),
-                    'yellow': (np.array([20, 100, 100]), np.array([30, 255, 255])),
-                    'green': (np.array([40, 100, 100]), np.array([90, 255, 255]))
+                    'red1': (np.array([0, 100, 95]), np.array([10, 255, 255])),
+                    'red2': (np.array([160, 100, 95]), np.array([179, 255, 255])),
+                    'yellow': (np.array([20, 100, 95]), np.array([30, 255, 255])),
+                    'green': (np.array([40, 100, 95]), np.array([90, 255, 255]))
                 }
 
                 # get_traffic_light_color -> Red, Yellow, Green, Unknown

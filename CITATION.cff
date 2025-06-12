@@ -21,10 +21,6 @@ authors:
     family-names: Choi
     email: dudrhkd7811@naver.com
     affiliation: Sungkyunkwan University
-  - given-names: Gyuhyeon
-    family-names: Hwang
-    email: rbgus7080@g.skku.edu
-    affiliation: Sungkyunkwan University
   - given-names: Eunho
     family-names: Kim
     email: dmsghdmstj@g.skku.edu
@@ -33,14 +29,6 @@ authors:
     family-names: Suh
     email: dudgns0407@g.skku.edu
     affiliation: Sungkyunkwan University
-  - given-names: Kyungdong
-    family-names: Kwon
-    affiliation: Sungkyunkwan University
-    email: harry0531@g.skku.edu
-  - affiliation: Sungkyunkwan University
-    given-names: Yunseo
-    family-names: Kim
-    email: dbstj829@g.skku.edu
 repository-code: >-
   https://github.com/SKKUAutoLab/H-Mobility-Autonomous-Advanced-Course
 license: GPL-3.0

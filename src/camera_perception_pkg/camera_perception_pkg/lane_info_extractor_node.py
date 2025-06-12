@@ -9,7 +9,7 @@ from rclpy.qos import QoSReliabilityPolicy
 from cv_bridge import CvBridge
 
 from sensor_msgs.msg import Image
-from interfaces_pkg.msg import LaneInfo, DetectionArray, BoundingBox2D, Detection
+from interfaces_pkg.msg import TargetPoint, LaneInfo, DetectionArray, BoundingBox2D, Detection
 from .lib import camera_perception_func_lib as CPFL
 
 #---------------Variable Setting---------------
@@ -18,6 +18,7 @@ SUB_TOPIC_NAME = "detections"
 
 # Publish할 토픽 이름
 PUB_TOPIC_NAME = "yolov8_lane_info"
+ROI_IMAGE_TOPIC_NAME = "roi_image"  # 추가: ROI 이미지 퍼블리시 토픽
 
 # 화면에 이미지를 처리하는 과정을 띄울것인지 여부: True, 또는 False 중 택1하여 입력
 SHOW_IMAGE = True
@@ -44,10 +45,11 @@ class Yolov8InfoExtractor(Node):
         
         self.subscriber = self.create_subscription(DetectionArray, self.sub_topic, self.yolov8_detections_callback, self.qos_profile)
         self.publisher = self.create_publisher(LaneInfo, self.pub_topic, self.qos_profile)
-    
+
+        # ROI 이미지 퍼블리셔 추가
+        self.roi_image_publisher = self.create_publisher(Image, ROI_IMAGE_TOPIC_NAME, self.qos_profile)
 
     def yolov8_detections_callback(self, detection_msg: DetectionArray):
-        
         if len(detection_msg.detections) == 0:
             return
         
@@ -64,19 +66,34 @@ class Yolov8InfoExtractor(Node):
             cv2.imshow('lane2_edge_image', lane2_edge_image)
             cv2.imshow('lane2_bird_img', lane2_bird_image)
             cv2.imshow('roi_img', roi_image)
-
             cv2.waitKey(1)
-            
+
+        # roi_image를 uint8 형식으로 변환
+        roi_image = cv2.convertScaleAbs(roi_image)  # 64FC1 -> uint8로 변환
+
+        # roi_image를 ROS Image 메시지로 변환
+        try:
+            roi_image_msg = self.cv_bridge.cv2_to_imgmsg(roi_image, encoding="mono8")
+            # ROI 이미지를 퍼블리시
+            self.roi_image_publisher.publish(roi_image_msg)
+        except Exception as e:
+            self.get_logger().error(f"Failed to convert and publish ROI image: {e}")
+        
         grad = CPFL.dominant_gradient(roi_image, theta_limit=70)
-        
-        target_point_y = 90
-        target_point_x = CPFL.get_lane_center(roi_image, detection_height=target_point_y, 
-                                            detection_thickness=10, road_gradient=grad, lane_width=300)
-        
+                
+        target_points = []
+        for target_point_y in range(5, 155, 50):  # 예시로 5에서 155까지 50씩 증가
+            target_point_x = CPFL.get_lane_center(roi_image, detection_height=target_point_y, 
+                                                detection_thickness=10, road_gradient=grad, lane_width=300)
+            
+            target_point = TargetPoint()
+            target_point.target_x = round(target_point_x)
+            target_point.target_y = round(target_point_y)
+            target_points.append(target_point)
+
         lane = LaneInfo()
         lane.slope = grad
-        lane.target_x = round(target_point_x)
-        lane.target_y = round(target_point_y)
+        lane.target_points = target_points
 
         self.publisher.publish(lane)
 

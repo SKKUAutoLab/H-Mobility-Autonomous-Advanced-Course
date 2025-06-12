@@ -1,8 +1,6 @@
-import os
-from glob import glob
 from setuptools import find_packages, setup
 
-package_name = 'launch_pkg'
+package_name = 'debug_pkg'
 
 setup(
     name=package_name,
@@ -12,17 +10,18 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='jinsunlee',
-    maintainer_email='with23skku@g.skku.edu',
+    maintainer='hhk-laptop',
+    maintainer_email='whaihong@g.skku.edu',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'path_visualizer_node = debug_pkg.path_visualizer_node:main',	
+            'yolov8_visualizer_node = debug_pkg.yolov8_visualizer_node:main',	
         ],
     },
 )

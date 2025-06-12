@@ -50,12 +50,17 @@ class Yolov8Node(LifecycleNode):
 
     def __init__(self, **kwargs) -> None:
         super().__init__("yolov8_node", **kwargs)
-
-        # params
+        
+        #---------------Variable Setting---------------
+        # 딥러닝 모델 pt 파일명 작성
         #self.declare_parameter("model", "yolov8m.pt")
         self.declare_parameter("model", "best.pt")
+        
+        # 추론 하드웨어 선택 (cpu / gpu) 
         self.declare_parameter("device", "cpu")
         #self.declare_parameter("device", "cuda:0")
+        #----------------------------------------------
+        
         self.declare_parameter("threshold", 0.5)
         self.declare_parameter("enable", True)
         self.declare_parameter("image_reliability",
@@ -105,8 +110,15 @@ class Yolov8Node(LifecycleNode):
     def on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
         self.get_logger().info(f'Activating {self.get_name()}')
 
-        self.yolo = YOLO(self.model)
-        self.yolo.fuse()
+        try:
+            self.yolo = YOLO(self.model)  # 모델 로딩
+            self.yolo.fuse()
+        except FileNotFoundError:
+            self.get_logger().error(f"Error: Model file '{self.model}' not found!")
+            return TransitionCallbackReturn.FAILURE
+        except Exception as e:
+            self.get_logger().error(f"Error while loading model '{self.model}': {str(e)}")
+            return TransitionCallbackReturn.FAILURE
 
         # subs
         self._sub = self.create_subscription(
@@ -119,6 +131,7 @@ class Yolov8Node(LifecycleNode):
         super().on_activate(state)
 
         return TransitionCallbackReturn.SUCCESS
+
 
     def on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
         self.get_logger().info(f'Deactivating {self.get_name()}')

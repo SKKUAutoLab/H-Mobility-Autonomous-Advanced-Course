@@ -1,96 +1,63 @@
-'''
-키 조작
-
-w : 속도 +10
-s : 속도 -10
-a : 회전 -1     (- : 좌회전, + : 우회전)
-d : 회전 +1
-
-c: 카메라 프레임 캡쳐
-
-r : 일시정지
-f : 종료
-'''
-
-import cv2
-import string
-import time
-import sys
-import os
+import serial
 import marshal
 import types
+import os
+import time
 
 real_path = os.path.dirname(os.path.realpath(__file__))
-pyc = open((real_path)+'/data_collection_func.cpython-310.pyc', 'rb').read()
+pyc = open((real_path)+'/data_collection_func_lib.cpython-310.pyc', 'rb').read()
 code = marshal.loads(pyc[16:])
 module = types.ModuleType('module_name')
 exec(code, module.__dict__)
 
-
-# TODO ----------------------------------------------------
-# video 번호 입력
-CAM_NUM = 2 
-
-# 아두이노 포트번호 입력
-PORT='/dev/ttyACM0' 
-
-# 데이터 수집 경로 입력
-DATA_COLLECTION_PATH= os.path.dirname(real_path) + '/camera_perception_pkg/camera_perception_pkg/lib/Collected_Datasets' 
-
-# 가변저항 입력 핀
-VARIBLE_RESISTOR_INPUT_PIN = 'A2'
-
-# 조향모터에 연결된 핀
-STEERING_PIN1 = 10
-STEERING_PIN2 = 12
-
-# 좌측 뒷바퀴에 연결된 핀
-LEFT_REAR_PIN1 = 3
-LEFT_REAR_PIN2 = 5
-
-# 우측 뒷바퀴에 연결된 핀
-RIGHT_REAR_PIN1 = 6
-RIGHT_REAR_PIN2 = 8
-
-# 가변저항 최대 좌측값 & 최대 우측값
-VARIBLE_RESISTOR_MOST_LEFT = 450 
-VARIBLE_RESISTOR_MOST_RIGHT = 335
-
-# ----------------------------------------------------
-
-
-
-
 def main():
-    arduino_init_info = [VARIBLE_RESISTOR_INPUT_PIN,
-                        STEERING_PIN1,
-                        STEERING_PIN2,
-                        LEFT_REAR_PIN1,
-                        LEFT_REAR_PIN2,
-                        RIGHT_REAR_PIN1,
-                        RIGHT_REAR_PIN2,
-                        VARIBLE_RESISTOR_MOST_LEFT,
-                        VARIBLE_RESISTOR_MOST_RIGHT
-                        ]
-    data_collector = module.Data_Collect(path=DATA_COLLECTION_PATH, cam_num=CAM_NUM, ser_port=PORT, arduino_info=arduino_init_info)
-    
+    DATA_PATH= os.path.dirname(real_path) + '/camera_perception_pkg/camera_perception_pkg/lib/Collected_Datasets' 
+    CAMERA_NUM = 0
+    SERIAL_PORT = "/dev/ttyACM0"
+    MAX_STEERING = 7  # 사용자 정의 최대 조향 단계
+
+    print(DATA_PATH)
+
+    # 데이터 수집 객체 초기화
+    data_collector = module.Data_Collect(path=DATA_PATH, cam_num=CAMERA_NUM, max_steering=MAX_STEERING)
+    ser = serial.Serial(SERIAL_PORT, 9600, timeout=1)
+    time.sleep(1)
     try:
-        data_collector.process()
-        
+        # 숨겨진 코드 프로세스 시작
+        while True:
+            # 한 번의 키보드 입력 처리
+            result = data_collector.process()
+
+            # 프로세스 종료 플래그 확인
+            if result["exit"]:
+                steering = 0
+                left_speed = 0
+                right_speed = 0
+                message = f"s{steering}l{left_speed}r{right_speed}\n"
+                ser.write(message.encode())
+                break
+
+            # 현재 제어 값 가져오기
+            control_values = data_collector.get_control_values()
+
+            # 시리얼 송신
+            message = f"s{control_values['steering']}l{control_values['left_speed']}r{control_values['right_speed']}\n"
+            ser.write(message.encode())
+
+            # 디버깅용 출력
+            print(f"Sent: {message.strip()}")
+
     except KeyboardInterrupt:
-        data_collector.interrupt_process()
+        steering = 0
+        left_speed = 0
+        right_speed = 0
+        message = f"s{steering}l{left_speed}r{right_speed}\n"
+        ser.write(message.encode())
+        print("Program interrupted.")
+    finally:
+        ser.close()
+        data_collector.cleanup()
+        print("Serial connection closed.")
 
-
-    data_collector.ser.close()
-
-    if data_collector.cap.isOpened():
-        data_collector.cap.release()
-
-
-    cv2.destroyAllWindows()
-    print('program finish')
-    sys.exit(0)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
