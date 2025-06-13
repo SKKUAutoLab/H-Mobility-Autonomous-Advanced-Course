@@ -1,4 +1,4 @@
-![image](https://github.com/SKKUAutoLab/H-Mobility-Autonomous-Advanced-Course/assets/68187536/b6db43ea-88f0-41b2-bbd4-5c63d30a21ce)
+![image](https://github.com/user-attachments/assets/dcb18208-73f5-4e06-97a5-8838f85a0d85)
 
 ![자율주행 심화과정 일정](https://github.com/SKKUAutoLab/H-Mobility-Autonomous-Advanced-Course/assets/68187536/f6ba58ab-cba2-4555-ab0c-36b6dcb18780)
 
