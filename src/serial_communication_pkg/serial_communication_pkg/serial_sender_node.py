@@ -17,7 +17,7 @@ SUB_TOPIC_NAME = "topic_control_signal"
 PORT='/dev/ttyACM0'
 #----------------------------------------------
 
-ser = serial.Serial(PORT, 9600, timeout=1)
+ser = serial.Serial(PORT, 115200, timeout=1)
 time.sleep(1)
 
 class SerialSenderNode(Node):

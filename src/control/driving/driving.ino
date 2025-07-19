@@ -38,7 +38,7 @@ void processIncomingByte(const byte inByte);
 void processData(const char *data);
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     // 핀 모드 설정
     pinMode(POT, INPUT);
